@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // Hide the dev-mode "N" indicator (dev only; never in production builds).
+  devIndicators: false,
 };
 
 export default nextConfig;
