@@ -1,0 +1,42 @@
+name: deploy-to-pixelrun
+
+# Staging deploy: static export -> Hostinger (rumplefarm.pixelrun.co.uk).
+# Lives on the `staging` branch only. The future DreamHost live deploy
+# will be a separate workflow file on `main` — do not merge this file there.
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout staging
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static export
+        run: npm run build
+
+      - name: Deploy to Hostinger via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.STAGING_FTP_HOST }}
+          username: ${{ secrets.STAGING_FTP_USERNAME }}
+          password: ${{ secrets.STAGING_FTP_PASSWORD }}
+          port: 21
+          protocol: ftps
+          local-dir: ./out/
+          server-dir: ${{ secrets.STAGING_FTP_SERVER_DIR }}/
+          dangerous-clean-slate: true
+          log-level: minimal
