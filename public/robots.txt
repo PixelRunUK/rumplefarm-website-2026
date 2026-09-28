@@ -1,0 +1,4 @@
+# STAGING ONLY — do not copy to the live site.
+# This host must never be indexed.
+User-agent: *
+Disallow: /
